@@ -3,7 +3,7 @@ import java.util.*;
 
 public class DataManagementSystem
 {
-    static String filePath = "Data.txt";
+    private static String filePath = "";
 
     /**
      * Finds and returns the entire item block for the specified item name.
@@ -318,5 +318,10 @@ public class DataManagementSystem
             return "Error reading file.";
         }
         return sb.toString();
+    }
+    
+    public static void setFilePath(String fp)
+    {
+    	filePath=fp;
     }
 }
