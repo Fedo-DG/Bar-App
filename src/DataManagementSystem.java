@@ -10,41 +10,49 @@ public class DataManagementSystem
      * Returns "Item not found or error occurred" if not found.
      */
     
+    /**
+     * Finds and returns the entire item block for the specified item name.
+     * Returns "Item not found or error occurred" if not found.
+     */
     public static String findItem(String toFind)
     {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath)))
+        try 
         {
-            String line;
-            while ((line = reader.readLine()) != null)
+            List<String> allLines = readAllLines();
+            
+            for (int i = 0; i < allLines.size(); i++)
             {
-                line = line.trim();
-                if (line.startsWith("Item=") && line.substring(5, line.length() - 1).equalsIgnoreCase(toFind))
+                String curr = allLines.get(i).trim();
+                
+                // Cerca la riga che contiene Item=nomeProdotto;
+                if (curr.startsWith("Item=") && curr.endsWith(";"))
                 {
-                    List<String> allLines = readAllLines();
-                    for (int i = 0; i < allLines.size(); i++)
+                    String itemName = curr.substring(5, curr.length() - 1);
+                    if (itemName.equalsIgnoreCase(toFind))
                     {
-                        String curr = allLines.get(i).trim();
-                        if (curr.equals("Item=" + toFind + ";"))
+                        // Trovato! Ora trova l'inizio del blocco (la parentesi graffa {)
+                        int start = i;
+                        while (start >= 0 && !allLines.get(start).trim().equals("{"))
                         {
-                            int start = i;
-                            while (start >= 0 && !allLines.get(start).trim().equals("{"))
+                            start--;
+                        }
+                        
+                        // Trova la fine del blocco (la parentesi graffa })
+                        int end = i;
+                        while (end < allLines.size() && !allLines.get(end).trim().equals("}"))
+                        {
+                            end++;
+                        }
+                        
+                        // Costruisci il risultato
+                        if (start >= 0 && end < allLines.size())
+                        {
+                            StringJoiner result = new StringJoiner("\n");
+                            for (int j = start; j <= end; j++)
                             {
-                                start--;
+                                result.add(allLines.get(j));
                             }
-                            int end = i;
-                            while (end < allLines.size() && !allLines.get(end).trim().equals("}"))
-                            {
-                                end++;
-                            }
-                            if (start >= 0 && end < allLines.size())
-                            {
-                                StringJoiner result = new StringJoiner("\n");
-                                for (int j = start; j <= end; j++)
-                                {
-                                    result.add(allLines.get(j));
-                                }
-                                return result.toString();
-                            }
+                            return result.toString();
                         }
                     }
                 }
