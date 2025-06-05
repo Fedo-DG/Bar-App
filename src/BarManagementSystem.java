@@ -1,35 +1,6 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
 
 public class BarManagementSystem {
     private static final String DATA_FILE = "inventario_bar.txt";
@@ -444,17 +415,306 @@ public class BarManagementSystem {
     }
 
     private static void mostraInventarioCompleto() {
-        String inventario = DataManagementSystem.fileToString();
-        if (inventario.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "L'inventario è vuoto.");
-        } else {
-            JTextArea textArea = new JTextArea(inventario);
-            textArea.setEditable(false);
-            textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-            JScrollPane scrollPane = new JScrollPane(textArea);
-            scrollPane.setPreferredSize(new Dimension(500, 400));
-            JOptionPane.showMessageDialog(null, scrollPane, "Inventario Completo", JOptionPane.INFORMATION_MESSAGE);
+        // Crea finestra personalizzata per l'inventario
+        JFrame inventarioFrame = new JFrame("📦 Inventario Completo - Sistema Bar");
+        inventarioFrame.setSize(900, 650);
+        inventarioFrame.setLocationRelativeTo(null);
+        inventarioFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        // Colori del tema
+        Color sfondo = new Color(255, 248, 220);
+        Color headerColor = new Color(101, 67, 33);
+        Color cardColor = Color.WHITE;
+        Color accentColor = new Color(139, 69, 19);
+        
+        // Panel principale
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(sfondo);
+        
+        // Header
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(headerColor);
+        headerPanel.setPreferredSize(new Dimension(900, 80));
+        headerPanel.setLayout(new BorderLayout());
+        
+        JLabel titleLabel = new JLabel("📦 INVENTARIO BAR", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setForeground(Color.WHITE);
+        
+        JLabel subtitleLabel = new JLabel("Gestione completa prodotti e scorte", SwingConstants.CENTER);
+        subtitleLabel.setFont(new Font("SansSerif", Font.ITALIC, 14));
+        subtitleLabel.setForeground(new Color(255, 248, 220));
+        
+        JPanel titlePanel = new JPanel(new GridLayout(2, 1));
+        titlePanel.setBackground(headerColor);
+        titlePanel.add(titleLabel);
+        titlePanel.add(subtitleLabel);
+        
+        headerPanel.add(titlePanel, BorderLayout.CENTER);
+        
+        // Panel per le statistiche
+        JPanel statsPanel = new JPanel(new GridLayout(1, 4, 10, 0));
+        statsPanel.setBackground(sfondo);
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        
+        // Raccogli dati per le statistiche
+        String inventarioRaw = DataManagementSystem.fileToString();
+        int totaleProdotti = 0;
+        int prodottiDisponibili = 0;
+        int prodottiInEsaurimento = 0; // Meno di 10 pezzi
+        double valoreInventario = 0.0;
+        
+        if (!inventarioRaw.trim().isEmpty()) {
+            String[] items = inventarioRaw.split("\\{Name=");
+            
+            for (int i = 1; i < items.length; i++) {
+                String item = items[i];
+                try {
+                    // Estrai quantità e prezzo
+                    String quantityStr = item.substring(item.indexOf("Quantity=") + 9);
+                    quantityStr = quantityStr.substring(0, quantityStr.indexOf("}"));
+                    int quantity = Integer.parseInt(quantityStr);
+                    
+                    String priceStr = item.substring(item.indexOf("Price=") + 6);
+                    priceStr = priceStr.substring(0, priceStr.indexOf(","));
+                    double price = Double.parseDouble(priceStr);
+                    
+                    totaleProdotti++;
+                    if (quantity > 0) {
+                        prodottiDisponibili++;
+                        valoreInventario += quantity * price;
+                    }
+                    if (quantity > 0 && quantity < 10) {
+                        prodottiInEsaurimento++;
+                    }
+                } catch (Exception e) {
+                    // Ignora errori di parsing
+                }
+            }
         }
+        
+        // Crea card per le statistiche
+        statsPanel.add(createStatCard("📊 Totale Prodotti", String.valueOf(totaleProdotti), accentColor));
+        statsPanel.add(createStatCard("✅ Disponibili", String.valueOf(prodottiDisponibili), new Color(34, 139, 34)));
+        statsPanel.add(createStatCard("⚠️ In Esaurimento", String.valueOf(prodottiInEsaurimento), new Color(255, 140, 0)));
+        statsPanel.add(createStatCard("💰 Valore Tot.", "€" + String.format("%.2f", valoreInventario), new Color(30, 144, 255)));
+        
+        // Panel per la tabella inventario
+        JPanel inventarioPanel = new JPanel(new BorderLayout());
+        inventarioPanel.setBackground(sfondo);
+        inventarioPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
+        
+        // Tabella inventario con layout migliorato
+        JPanel tablePanel = new JPanel();
+        tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
+        tablePanel.setBackground(cardColor);
+        tablePanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+        
+        // Header della tabella
+        JPanel tableHeader = new JPanel(new GridLayout(1, 4));
+        tableHeader.setBackground(new Color(245, 245, 245));
+        tableHeader.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        JLabel[] headers = {
+            new JLabel("🏷️ PRODOTTO", SwingConstants.LEFT),
+            new JLabel("💰 PREZZO", SwingConstants.CENTER),
+            new JLabel("📦 QUANTITÀ", SwingConstants.CENTER),
+            new JLabel("📊 STATO", SwingConstants.CENTER)
+        };
+        
+        for (JLabel header : headers) {
+            header.setFont(new Font("SansSerif", Font.BOLD, 12));
+            header.setForeground(headerColor);
+            tableHeader.add(header);
+        }
+        
+        tablePanel.add(tableHeader);
+        
+        // Aggiungi prodotti raggruppati per categoria
+        String[] categorie = {"🍩 Colazione", "🥤 Bevande", "🥪 Salati", "🍌 Snack"};
+        
+        for (String categoria : categorie) {
+            // Separator per categoria
+            JPanel categorySeparator = new JPanel();
+            categorySeparator.setBackground(accentColor);
+            categorySeparator.setPreferredSize(new Dimension(0, 2));
+            categorySeparator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
+            tablePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            tablePanel.add(categorySeparator);
+            
+            // Label categoria
+            JLabel categoryLabel = new JLabel(categoria);
+            categoryLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+            categoryLabel.setForeground(accentColor);
+            categoryLabel.setBorder(BorderFactory.createEmptyBorder(8, 5, 5, 5));
+            tablePanel.add(categoryLabel);
+            
+            // Prodotti della categoria
+            String[] prodottiCategoria = getProdottiPerCategoria(categoria);
+            for (String prodotto : prodottiCategoria) {
+                String itemInfo = DataManagementSystem.findItem(prodotto);
+                if (!itemInfo.equals("Item not found or error occurred")) {
+                    String[] lines = itemInfo.split("\n");
+                    String prezzo = "";
+                    String quantita = "";
+                    
+                    for (String line : lines) {
+                        if (line.trim().startsWith("Price=")) {
+                            prezzo = line.trim().substring(6, line.trim().length() - 1);
+                        } else if (line.trim().startsWith("Quantity=")) {
+                            quantita = line.trim().substring(9, line.trim().length() - 1);
+                        }
+                    }
+                    
+                    JPanel productRow = createProductRow(prodotto, prezzo, quantita);
+                    tablePanel.add(productRow);
+                }
+            }
+        }
+        
+        // ScrollPane per la tabella
+        JScrollPane scrollPane = new JScrollPane(tablePanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBorder(null);
+        
+        inventarioPanel.add(scrollPane, BorderLayout.CENTER);
+        
+        // Panel per i pulsanti di azione
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        actionPanel.setBackground(sfondo);
+        
+        JButton refreshButton = new JButton("🔄 Aggiorna");
+        JButton exportButton = new JButton("📋 Esporta");
+        JButton closeButton = new JButton("❌ Chiudi");
+        
+        // Stile pulsanti
+        JButton[] buttons = {refreshButton, exportButton, closeButton};
+        Color[] buttonColors = {
+            new Color(34, 139, 34),    // Verde per refresh
+            new Color(30, 144, 255),   // Blu per export
+            new Color(178, 34, 34)     // Rosso per chiudi
+        };
+        
+        for (int i = 0; i < buttons.length; i++) {
+            styleActionButton(buttons[i], buttonColors[i]);
+        }
+        
+        // Event listeners
+        refreshButton.addActionListener(e -> {
+            inventarioFrame.dispose();
+            mostraInventarioCompleto(); // Ricarica la finestra
+        });
+        
+        exportButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(inventarioFrame, 
+                "Funzione di esportazione non ancora implementata.\nI dati sono salvati in: " + DATA_FILE);
+        });
+        
+        closeButton.addActionListener(e -> inventarioFrame.dispose());
+        
+        actionPanel.add(refreshButton);
+        actionPanel.add(exportButton);
+        actionPanel.add(closeButton);
+        
+        // Assembla la finestra
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(statsPanel, BorderLayout.PAGE_START);
+        mainPanel.add(inventarioPanel, BorderLayout.CENTER);
+        mainPanel.add(actionPanel, BorderLayout.SOUTH);
+        
+        inventarioFrame.add(mainPanel);
+        inventarioFrame.setVisible(true);
+    }
+
+    // Metodo helper per creare card delle statistiche
+    private static JPanel createStatCard(String title, String value, Color accentColor) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(230, 230, 230), 1),
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        ));
+        
+        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
+        titleLabel.setForeground(new Color(100, 100, 100));
+        
+        JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
+        valueLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        valueLabel.setForeground(accentColor);
+        
+        card.add(titleLabel, BorderLayout.NORTH);
+        card.add(valueLabel, BorderLayout.CENTER);
+        
+        return card;
+    }
+
+    // Metodo helper per creare righe prodotto
+    private static JPanel createProductRow(String nome, String prezzo, String quantita) {
+        JPanel row = new JPanel(new GridLayout(1, 4));
+        row.setBackground(Color.WHITE);
+        row.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        
+        // Alterna colore di sfondo
+        if (Math.random() > 0.5) {
+            row.setBackground(new Color(248, 248, 248));
+        }
+        
+        // Nome prodotto
+        JLabel nomeLabel = new JLabel(nome);
+        nomeLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        
+        // Prezzo
+        JLabel prezzoLabel = new JLabel("€" + prezzo, SwingConstants.CENTER);
+        prezzoLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        prezzoLabel.setForeground(new Color(30, 144, 255));
+        
+        // Quantità
+        JLabel quantitaLabel = new JLabel(quantita, SwingConstants.CENTER);
+        quantitaLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        
+        // Stato basato sulla quantità
+        JLabel statoLabel = new JLabel();
+        statoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        statoLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
+        
+        int qty = Integer.parseInt(quantita);
+        if (qty == 0) {
+            statoLabel.setText("❌ ESAURITO");
+            statoLabel.setForeground(new Color(178, 34, 34));
+        } else if (qty < 10) {
+            statoLabel.setText("⚠️ SCARSO");
+            statoLabel.setForeground(new Color(255, 140, 0));
+        } else if (qty < 25) {
+            statoLabel.setText("🟡 MEDIO");
+            statoLabel.setForeground(new Color(255, 193, 7));
+        } else {
+            statoLabel.setText("✅ OK");
+            statoLabel.setForeground(new Color(34, 139, 34));
+        }
+        
+        row.add(nomeLabel);
+        row.add(prezzoLabel);
+        row.add(quantitaLabel);
+        row.add(statoLabel);
+        
+        return row;
+    }
+
+    // Metodo helper per stilizzare i pulsanti di azione
+    private static void styleActionButton(JButton button, Color bgColor) {
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setFont(new Font("SansSerif", Font.BOLD, 12));
+        button.setPreferredSize(new Dimension(120, 35));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
     }
 
     private static void aggiungiNuovoProdotto(JFrame parent) {
@@ -708,3 +968,4 @@ private static void inviaOrdine(JFrame parent) {
     }
 }
 }
+
