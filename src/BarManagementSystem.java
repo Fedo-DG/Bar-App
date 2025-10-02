@@ -2,7 +2,6 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 
-// Helper class for cart items
 class CartItem {
     String nome;
     double prezzo;
