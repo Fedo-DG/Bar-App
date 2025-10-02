@@ -2,6 +2,36 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 
+// Helper class for cart items
+class CartItem {
+    String nome;
+    double prezzo;
+    int quantita;
+    
+    public CartItem(String nome, double prezzo, int quantita) {
+        this.nome = nome;
+        this.prezzo = prezzo;
+        this.quantita = quantita;
+    }
+    
+    public double getTotale() {
+        return prezzo * quantita;
+    }
+}
+
+// Helper class for product information
+class ProductInfo {
+    String nome;
+    double prezzo;
+    int quantita;
+    
+    public ProductInfo(String nome, double prezzo, int quantita) {
+        this.nome = nome;
+        this.prezzo = prezzo;
+        this.quantita = quantita;
+    }
+}
+
 public class BarManagementSystem {
     private static final String DATA_FILE = "inventario_bar.txt";
     private static Map<String, CartItem> carrello = new HashMap<>();
@@ -100,146 +130,146 @@ public class BarManagementSystem {
     }
 
     private static void apriAreaClienti(Color sfondo, Color bottoneColore, Color testoColore) {
-    JFrame clientiFrame = new JFrame("Area Clienti");
-    clientiFrame.setSize(800, 600);
-    clientiFrame.setLocationRelativeTo(null);
-    clientiFrame.setLayout(new BorderLayout());
+        JFrame clientiFrame = new JFrame("Area Clienti");
+        clientiFrame.setSize(800, 600);
+        clientiFrame.setLocationRelativeTo(null);
+        clientiFrame.setLayout(new BorderLayout());
 
-    // Header
-    JLabel label = new JLabel("Benvenuto nell'Area Clienti!", SwingConstants.CENTER);
-    label.setFont(new Font("SansSerif", Font.BOLD, 18));
-    label.setForeground(new Color(101, 67, 33));
-    label.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-    clientiFrame.add(label, BorderLayout.NORTH);
+        // Header
+        JLabel label = new JLabel("Benvenuto nell'Area Clienti!", SwingConstants.CENTER);
+        label.setFont(new Font("SansSerif", Font.BOLD, 18));
+        label.setForeground(new Color(101, 67, 33));
+        label.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        clientiFrame.add(label, BorderLayout.NORTH);
 
-    // Panel principale con layout diviso
-    JPanel mainPanel = new JPanel(new BorderLayout());
-    mainPanel.setBackground(sfondo);
+        // Panel principale con layout diviso
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(sfondo);
 
-    // Panel sinistro - Prodotti
-    JPanel leftPanel = new JPanel(new BorderLayout());
-    leftPanel.setBackground(sfondo);
-    leftPanel.setBorder(BorderFactory.createTitledBorder("Prodotti Disponibili"));
-    leftPanel.setPreferredSize(new Dimension(500, 400));
+        // Panel sinistro - Prodotti
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.setBackground(sfondo);
+        leftPanel.setBorder(BorderFactory.createTitledBorder("Prodotti Disponibili"));
+        leftPanel.setPreferredSize(new Dimension(500, 400));
 
-    // Dropdown categorie
-    JPanel categoryPanel = new JPanel();
-    categoryPanel.setBackground(sfondo);
-    String[] categorie = {"Tutti i prodotti", "🍩 Colazione", "🥤 Bevande", "🥪 Salati", "🍌 Snack"};
-    JComboBox<String> categoryCombo = new JComboBox<>(categorie);
-    categoryCombo.setBackground(Color.WHITE);
-    categoryPanel.add(new JLabel("Categoria: "));
-    categoryPanel.add(categoryCombo);
-    leftPanel.add(categoryPanel, BorderLayout.NORTH);
+        // Dropdown categorie
+        JPanel categoryPanel = new JPanel();
+        categoryPanel.setBackground(sfondo);
+        String[] categorie = {"Tutti i prodotti", "🍩 Colazione", "🥤 Bevande", "🥪 Salati", "🍌 Snack"};
+        JComboBox<String> categoryCombo = new JComboBox<>(categorie);
+        categoryCombo.setBackground(Color.WHITE);
+        categoryPanel.add(new JLabel("Categoria: "));
+        categoryPanel.add(categoryCombo);
+        leftPanel.add(categoryPanel, BorderLayout.NORTH);
 
-    // Lista prodotti
-    DefaultListModel<String> productModel = new DefaultListModel<>();
-    JList<String> productList = new JList<>(productModel);
-    productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    productList.setFont(new Font("SansSerif", Font.PLAIN, 12));
-    JScrollPane productScroll = new JScrollPane(productList);
-    leftPanel.add(productScroll, BorderLayout.CENTER);
+        // Lista prodotti
+        DefaultListModel<String> productModel = new DefaultListModel<>();
+        JList<String> productList = new JList<>(productModel);
+        productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        productList.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        JScrollPane productScroll = new JScrollPane(productList);
+        leftPanel.add(productScroll, BorderLayout.CENTER);
 
-    // Panel per aggiungere al carrello
-    JPanel addPanel = new JPanel();
-    addPanel.setBackground(sfondo);
-    JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-    JButton addToCartButton = new JButton("Aggiungi al Carrello");
-    stileBottone(addToCartButton, bottoneColore, testoColore);
-    addPanel.add(new JLabel("Quantità:"));
-    addPanel.add(quantitySpinner);
-    addPanel.add(addToCartButton);
-    leftPanel.add(addPanel, BorderLayout.SOUTH);
+        // Panel per aggiungere al carrello
+        JPanel addPanel = new JPanel();
+        addPanel.setBackground(sfondo);
+        JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        JButton addToCartButton = new JButton("Aggiungi al Carrello");
+        stileBottone(addToCartButton, bottoneColore, testoColore);
+        addPanel.add(new JLabel("Quantità:"));
+        addPanel.add(quantitySpinner);
+        addPanel.add(addToCartButton);
+        leftPanel.add(addPanel, BorderLayout.SOUTH);
 
-    // Panel destro - Carrello
-    JPanel rightPanel = new JPanel(new BorderLayout());
-    rightPanel.setBackground(sfondo);
-    rightPanel.setBorder(BorderFactory.createTitledBorder("Carrello"));
-    rightPanel.setPreferredSize(new Dimension(280, 400));
+        // Panel destro - Carrello
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.setBackground(sfondo);
+        rightPanel.setBorder(BorderFactory.createTitledBorder("Carrello"));
+        rightPanel.setPreferredSize(new Dimension(280, 400));
 
-    // Lista carrello
-    DefaultListModel<String> cartModel = new DefaultListModel<>();
-    JList<String> cartList = new JList<>(cartModel);
-    cartList.setFont(new Font("SansSerif", Font.PLAIN, 11));
-    JScrollPane cartScroll = new JScrollPane(cartList);
-    rightPanel.add(cartScroll, BorderLayout.CENTER);
+        // Lista carrello
+        DefaultListModel<String> cartModel = new DefaultListModel<>();
+        JList<String> cartList = new JList<>(cartModel);
+        cartList.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        JScrollPane cartScroll = new JScrollPane(cartList);
+        rightPanel.add(cartScroll, BorderLayout.CENTER);
 
-    // Panel totale e azioni carrello
-    JPanel cartActionsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
-    cartActionsPanel.setBackground(sfondo);
-    
-    JLabel totalLabel = new JLabel("Totale: €0.00");
-    totalLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-    totalLabel.setForeground(new Color(101, 67, 33));
-    
-    JButton removeFromCartButton = new JButton("Rimuovi Selezionato");
-    JButton clearCartButton = new JButton("Svuota Carrello");
-    JButton orderButton = new JButton("Invia Ordine");
-    
-    stileBottone(removeFromCartButton, new Color(178, 34, 34), Color.WHITE);
-    stileBottone(clearCartButton, new Color(178, 34, 34), Color.WHITE);
-    stileBottone(orderButton, new Color(34, 139, 34), Color.WHITE);
-    
-    cartActionsPanel.add(totalLabel);
-    cartActionsPanel.add(removeFromCartButton);
-    cartActionsPanel.add(clearCartButton);
-    cartActionsPanel.add(orderButton);
-    rightPanel.add(cartActionsPanel, BorderLayout.SOUTH);
+        // Panel totale e azioni carrello
+        JPanel cartActionsPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        cartActionsPanel.setBackground(sfondo);
+        
+        JLabel totalLabel = new JLabel("Totale: €0.00");
+        totalLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        totalLabel.setForeground(new Color(101, 67, 33));
+        
+        JButton removeFromCartButton = new JButton("Rimuovi Selezionato");
+        JButton clearCartButton = new JButton("Svuota Carrello");
+        JButton orderButton = new JButton("Invia Ordine");
+        
+        stileBottone(removeFromCartButton, new Color(178, 34, 34), Color.WHITE);
+        stileBottone(clearCartButton, new Color(178, 34, 34), Color.WHITE);
+        stileBottone(orderButton, new Color(34, 139, 34), Color.WHITE);
+        
+        cartActionsPanel.add(totalLabel);
+        cartActionsPanel.add(removeFromCartButton);
+        cartActionsPanel.add(clearCartButton);
+        cartActionsPanel.add(orderButton);
+        rightPanel.add(cartActionsPanel, BorderLayout.SOUTH);
 
-    mainPanel.add(leftPanel, BorderLayout.WEST);
-    mainPanel.add(rightPanel, BorderLayout.EAST);
-    clientiFrame.add(mainPanel, BorderLayout.CENTER);
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+        mainPanel.add(rightPanel, BorderLayout.EAST);
+        clientiFrame.add(mainPanel, BorderLayout.CENTER);
 
-    // Carica inizialmente tutti i prodotti
-    caricaProdotti(productModel, "Tutti i prodotti");
-    aggiornaCarrello(cartModel, totalLabel);
-
-    // Event listeners
-    categoryCombo.addActionListener(e -> {
-        String selected = (String) categoryCombo.getSelectedItem();
-        caricaProdotti(productModel, selected);
-    });
-
-    addToCartButton.addActionListener(e -> {
-        String selected = productList.getSelectedValue();
-        if (selected != null) {
-            String nomeProdotto = estraiNomeProdotto(selected);
-            int quantita = (Integer) quantitySpinner.getValue();
-            aggiungiAlCarrello(nomeProdotto, quantita);
-            aggiornaCarrello(cartModel, totalLabel);
-        } else {
-            JOptionPane.showMessageDialog(clientiFrame, "Seleziona un prodotto!");
-        }
-    });
-
-    removeFromCartButton.addActionListener(e -> {
-        String selected = cartList.getSelectedValue();
-        if (selected != null) {
-            String nomeProdotto = estraiNomeProdottoCarrello(selected);
-            carrello.remove(nomeProdotto);
-            aggiornaCarrello(cartModel, totalLabel);
-        } else {
-            JOptionPane.showMessageDialog(clientiFrame, "Seleziona un item dal carrello!");
-        }
-    });
-
-    clearCartButton.addActionListener(e -> {
-        carrello.clear();
+        // Carica inizialmente tutti i prodotti
+        caricaProdotti(productModel, "Tutti i prodotti");
         aggiornaCarrello(cartModel, totalLabel);
-        JOptionPane.showMessageDialog(clientiFrame, "Carrello svuotato!");
-    });
 
-    orderButton.addActionListener(e -> {
-        if (carrello.isEmpty()) {
-            JOptionPane.showMessageDialog(clientiFrame, "Il carrello è vuoto!");
-        } else {
-            inviaOrdine(clientiFrame);
+        // Event listeners
+        categoryCombo.addActionListener(e -> {
+            String selected = (String) categoryCombo.getSelectedItem();
+            caricaProdotti(productModel, selected);
+        });
+
+        addToCartButton.addActionListener(e -> {
+            String selected = productList.getSelectedValue();
+            if (selected != null) {
+                String nomeProdotto = estraiNomeProdotto(selected);
+                int quantita = (Integer) quantitySpinner.getValue();
+                aggiungiAlCarrello(nomeProdotto, quantita);
+                aggiornaCarrello(cartModel, totalLabel);
+            } else {
+                JOptionPane.showMessageDialog(clientiFrame, "Seleziona un prodotto!");
+            }
+        });
+
+        removeFromCartButton.addActionListener(e -> {
+            String selected = cartList.getSelectedValue();
+            if (selected != null) {
+                String nomeProdotto = estraiNomeProdottoCarrello(selected);
+                carrello.remove(nomeProdotto);
+                aggiornaCarrello(cartModel, totalLabel);
+            } else {
+                JOptionPane.showMessageDialog(clientiFrame, "Seleziona un item dal carrello!");
+            }
+        });
+
+        clearCartButton.addActionListener(e -> {
+            carrello.clear();
             aggiornaCarrello(cartModel, totalLabel);
-        }
-    });
+            JOptionPane.showMessageDialog(clientiFrame, "Carrello svuotato!");
+        });
 
-    clientiFrame.setVisible(true);
-}
+        orderButton.addActionListener(e -> {
+            if (carrello.isEmpty()) {
+                JOptionPane.showMessageDialog(clientiFrame, "Il carrello è vuoto!");
+            } else {
+                inviaOrdine(clientiFrame);
+                aggiornaCarrello(cartModel, totalLabel);
+            }
+        });
+
+        clientiFrame.setVisible(true);
+    }
 
     private static void apriAreaPersonale(Color sfondo, Color bottoneColore, Color testoColore) {
         JFrame personaleFrame = new JFrame("Area Personale");
@@ -262,19 +292,14 @@ public class BarManagementSystem {
         JButton aggiungiProdotto = new JButton("Aggiungi Prodotto");
         JButton rifornisciProdotto = new JButton("Rifornisci Prodotto");
         JButton rimuoviProdotto = new JButton("Rimuovi dal Magazzino");
-
-        /*
-        JButton inventarioButton = new JButton("Visualizza Inventario");
-        stileBottone(inventarioButton, bottoneColore, testoColore);
-        inventarioButton.addActionListener(e -> mostraInventarioCompleto());
-        personaleFrame.add(inventarioButton);
-        */ 
+        JButton eliminaProdotto = new JButton("Elimina prodotto");
 
         stileBottone(mostraInventario, bottoneColore, testoColore);
         stileBottone(aggiungiProdotto, bottoneColore, testoColore);
         stileBottone(rifornisciProdotto, bottoneColore, testoColore);
         stileBottone(rimuoviProdotto, bottoneColore, testoColore);
-
+        stileBottone(eliminaProdotto, bottoneColore, testoColore);
+        
         panel.add(mostraInventario);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(aggiungiProdotto);
@@ -282,47 +307,21 @@ public class BarManagementSystem {
         panel.add(rifornisciProdotto);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(rimuoviProdotto);
-
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(eliminaProdotto);
+        
         mostraInventario.addActionListener(e -> mostraInventarioCompleto());
-
         aggiungiProdotto.addActionListener(e -> aggiungiNuovoProdotto(personaleFrame));
-
         rifornisciProdotto.addActionListener(e -> rifornisciProdotto(personaleFrame));
-
         rimuoviProdotto.addActionListener(e -> rimuoviDalMagazzino(personaleFrame));
+        eliminaProdotto.addActionListener(e -> eliminaDalMagazzino(personaleFrame));
+        
+        
 
         personaleFrame.add(panel, BorderLayout.CENTER);
         personaleFrame.setVisible(true);
     }
 
-    private static void mostraCategoria(String categoria, JFrame parent) {
-        String[] prodottiCategoria = getProdottiPerCategoria(categoria);
-        
-        StringBuilder sb = new StringBuilder("Prodotti disponibili in " + categoria + ":\n\n");
-        
-        for (String prodotto : prodottiCategoria) {
-            String itemInfo = DataManagementSystem.findItem(prodotto);
-            if (!itemInfo.equals("Item not found or error occurred")) {
-                String[] lines = itemInfo.split("\n");
-                String prezzo = "";
-                String quantita = "";
-                
-                for (String line : lines) {
-                    if (line.trim().startsWith("Price=")) {
-                        prezzo = line.trim().substring(6, line.trim().length() - 1);
-                    } else if (line.trim().startsWith("Quantity=")) {
-                        quantita = line.trim().substring(9, line.trim().length() - 1);
-                    }
-                }
-                
-                sb.append("• ").append(prodotto).append(" - €").append(prezzo)
-                  .append(" (Disponibili: ").append(quantita).append(")\n");
-            }
-        }
-        
-        JOptionPane.showMessageDialog(parent, sb.toString());
-    }
-    
     private static String[] getProdottiPerCategoria(String categoria) {
         switch (categoria) {
             case "🍩 Colazione":
@@ -342,92 +341,17 @@ public class BarManagementSystem {
         }
     }
 
-    private static void apriInterfacciaOrdine(JFrame parent, Color sfondo, Color bottoneColore, Color testoColore) {
-        JFrame ordineFrame = new JFrame("Effettua Ordine");
-        ordineFrame.setSize(400, 300);
-        ordineFrame.setLocationRelativeTo(parent);
-        
-        JPanel panel = new JPanel();
-        panel.setBackground(sfondo);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        JLabel istruzioni = new JLabel("Inserisci il nome del prodotto e la quantità:");
-        istruzioni.setAlignmentX(Component.CENTER_ALIGNMENT);
-        istruzioni.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        panel.add(istruzioni);
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
-        
-        JTextField prodottoField = new JTextField();
-        prodottoField.setMaximumSize(new Dimension(250, 25));
-        prodottoField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(new JLabel("Nome prodotto:"));
-        panel.add(prodottoField);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
-        JTextField quantitaField = new JTextField();
-        quantitaField.setMaximumSize(new Dimension(250, 25));
-        quantitaField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(new JLabel("Quantità:"));
-        panel.add(quantitaField);
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
-        JButton confermaButton = new JButton("Conferma Ordine");
-        stileBottone(confermaButton, bottoneColore, testoColore);
-        
-        confermaButton.addActionListener(e -> {
-            String prodotto = prodottoField.getText().trim();
-            String quantitaStr = quantitaField.getText().trim();
-            
-            if (prodotto.isEmpty() || quantitaStr.isEmpty()) {
-                JOptionPane.showMessageDialog(ordineFrame, "Compila tutti i campi!");
-                return;
-            }
-            
-            try {
-                int quantita = Integer.parseInt(quantitaStr);
-                if (quantita <= 0) {
-                    JOptionPane.showMessageDialog(ordineFrame, "La quantità deve essere positiva!");
-                    return;
-                }
-                
-                // Verifica se il prodotto esiste e ha quantità sufficiente
-                String itemInfo = DataManagementSystem.findItem(prodotto);
-                if (itemInfo.equals("Item not found or error occurred")) {
-                    JOptionPane.showMessageDialog(ordineFrame, "Prodotto non trovato!");
-                    return;
-                }
-                
-                // Rimuovi la quantità ordinata dall'inventario
-                DataManagementSystem.removeItem(prodotto, quantita);
-                JOptionPane.showMessageDialog(ordineFrame, 
-                    "Ordine confermato!\n" + quantita + "x " + prodotto);
-                ordineFrame.dispose();
-                
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(ordineFrame, "Inserisci un numero valido per la quantità!");
-            }
-        });
-        
-        panel.add(confermaButton);
-        ordineFrame.add(panel);
-        ordineFrame.setVisible(true);
-    }
-
     private static void mostraInventarioCompleto() {
-        // Crea finestra personalizzata per l'inventario
         JFrame inventarioFrame = new JFrame("📦 Inventario Completo - Sistema Bar");
         inventarioFrame.setSize(900, 650);
         inventarioFrame.setLocationRelativeTo(null);
         inventarioFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
-        // Colori del tema
         Color sfondo = new Color(255, 248, 220);
         Color headerColor = new Color(101, 67, 33);
         Color cardColor = Color.WHITE;
         Color accentColor = new Color(139, 69, 19);
         
-        // Panel principale
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(sfondo);
         
@@ -457,35 +381,47 @@ public class BarManagementSystem {
         statsPanel.setBackground(sfondo);
         statsPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         
-        // Raccogli dati per le statistiche
+        // Raccogli TUTTI i prodotti dal file
         String inventarioRaw = DataManagementSystem.fileToString();
+        ArrayList<ProductInfo> allProducts = new ArrayList<>();
         int totaleProdotti = 0;
         int prodottiDisponibili = 0;
-        int prodottiInEsaurimento = 0; // Meno di 10 pezzi
+        int prodottiInEsaurimento = 0;
         double valoreInventario = 0.0;
         
         if (!inventarioRaw.trim().isEmpty()) {
-            String[] items = inventarioRaw.split("\\{Name=");
+            String[] blocks = inventarioRaw.split("\\}");
             
-            for (int i = 1; i < items.length; i++) {
-                String item = items[i];
+            for (String block : blocks) {
+                if (block.trim().isEmpty()) continue;
+                
                 try {
-                    // Estrai quantità e prezzo
-                    String quantityStr = item.substring(item.indexOf("Quantity=") + 9);
-                    quantityStr = quantityStr.substring(0, quantityStr.indexOf("}"));
-                    int quantity = Integer.parseInt(quantityStr);
+                    String[] lines = block.split("\n");
+                    String nome = "";
+                    double prezzo = 0;
+                    int quantita = 0;
                     
-                    String priceStr = item.substring(item.indexOf("Price=") + 6);
-                    priceStr = priceStr.substring(0, priceStr.indexOf(","));
-                    double price = Double.parseDouble(priceStr);
-                    
-                    totaleProdotti++;
-                    if (quantity > 0) {
-                        prodottiDisponibili++;
-                        valoreInventario += quantity * price;
+                    for (String line : lines) {
+                        line = line.trim();
+                        if (line.startsWith("Item=")) {
+                            nome = line.substring(5, line.length() - 1).trim();
+                        } else if (line.startsWith("Price=")) {
+                            prezzo = Double.parseDouble(line.substring(6, line.length() - 1).trim());
+                        } else if (line.startsWith("Quantity=")) {
+                            quantita = Integer.parseInt(line.substring(9, line.length() - 1).trim());
+                        }
                     }
-                    if (quantity > 0 && quantity < 10) {
-                        prodottiInEsaurimento++;
+                    
+                    if (!nome.isEmpty()) {
+                        allProducts.add(new ProductInfo(nome, prezzo, quantita));
+                        totaleProdotti++;
+                        if (quantita > 0) {
+                            prodottiDisponibili++;
+                            valoreInventario += quantita * prezzo;
+                        }
+                        if (quantita > 0 && quantita < 10) {
+                            prodottiInEsaurimento++;
+                        }
                     }
                 } catch (Exception e) {
                     // Ignora errori di parsing
@@ -493,18 +429,15 @@ public class BarManagementSystem {
             }
         }
         
-        // Crea card per le statistiche
         statsPanel.add(createStatCard("📊 Totale Prodotti", String.valueOf(totaleProdotti), accentColor));
         statsPanel.add(createStatCard("✅ Disponibili", String.valueOf(prodottiDisponibili), new Color(34, 139, 34)));
         statsPanel.add(createStatCard("⚠️ In Esaurimento", String.valueOf(prodottiInEsaurimento), new Color(255, 140, 0)));
         statsPanel.add(createStatCard("💰 Valore Tot.", "€" + String.format("%.2f", valoreInventario), new Color(30, 144, 255)));
         
-        // Panel per la tabella inventario
         JPanel inventarioPanel = new JPanel(new BorderLayout());
         inventarioPanel.setBackground(sfondo);
         inventarioPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         
-        // Tabella inventario con layout migliorato
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
         tablePanel.setBackground(cardColor);
@@ -513,7 +446,6 @@ public class BarManagementSystem {
             BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
         
-        // Header della tabella
         JPanel tableHeader = new JPanel(new GridLayout(1, 4));
         tableHeader.setBackground(new Color(245, 245, 245));
         tableHeader.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -533,49 +465,61 @@ public class BarManagementSystem {
         
         tablePanel.add(tableHeader);
         
-        // Aggiungi prodotti raggruppati per categoria
-        String[] categorie = {"🍩 Colazione", "🥤 Bevande", "🥪 Salati", "🍌 Snack"};
+        // Group products by category
+        Map<String, ArrayList<ProductInfo>> categorizedProducts = new HashMap<>();
+        categorizedProducts.put("🍩 Colazione", new ArrayList<>());
+        categorizedProducts.put("🥤 Bevande", new ArrayList<>());
+        categorizedProducts.put("🥪 Salati", new ArrayList<>());
+        categorizedProducts.put("🍌 Snack", new ArrayList<>());
+        categorizedProducts.put("📦 Altri Prodotti", new ArrayList<>());
         
-        for (String categoria : categorie) {
-            // Separator per categoria
-            JPanel categorySeparator = new JPanel();
-            categorySeparator.setBackground(accentColor);
-            categorySeparator.setPreferredSize(new Dimension(0, 2));
-            categorySeparator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
-            tablePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-            tablePanel.add(categorySeparator);
+        for (ProductInfo product : allProducts) {
+            boolean categorized = false;
             
-            // Label categoria
-            JLabel categoryLabel = new JLabel(categoria);
-            categoryLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-            categoryLabel.setForeground(accentColor);
-            categoryLabel.setBorder(BorderFactory.createEmptyBorder(8, 5, 5, 5));
-            tablePanel.add(categoryLabel);
-            
-            // Prodotti della categoria
-            String[] prodottiCategoria = getProdottiPerCategoria(categoria);
-            for (String prodotto : prodottiCategoria) {
-                String itemInfo = DataManagementSystem.findItem(prodotto);
-                if (!itemInfo.equals("Item not found or error occurred")) {
-                    String[] lines = itemInfo.split("\n");
-                    String prezzo = "";
-                    String quantita = "";
-                    
-                    for (String line : lines) {
-                        if (line.trim().startsWith("Price=")) {
-                            prezzo = line.trim().substring(6, line.trim().length() - 1);
-                        } else if (line.trim().startsWith("Quantity=")) {
-                            quantita = line.trim().substring(9, line.trim().length() - 1);
-                        }
+            for (String categoria : new String[]{"🍩 Colazione", "🥤 Bevande", "🥪 Salati", "🍌 Snack"}) {
+                String[] prodottiCategoria = getProdottiPerCategoria(categoria);
+                for (String nomePredefinito : prodottiCategoria) {
+                    if (product.nome.equalsIgnoreCase(nomePredefinito)) {
+                        categorizedProducts.get(categoria).add(product);
+                        categorized = true;
+                        break;
                     }
-                    
-                    JPanel productRow = createProductRow(prodotto, prezzo, quantita);
+                }
+                if (categorized) break;
+            }
+            
+            if (!categorized) {
+                categorizedProducts.get("📦 Altri Prodotti").add(product);
+            }
+        }
+        
+        // Display products by category
+        for (String categoria : new String[]{"🍩 Colazione", "🥤 Bevande", "🥪 Salati", "🍌 Snack", "📦 Altri Prodotti"}) {
+            ArrayList<ProductInfo> prodottiCategoria = categorizedProducts.get(categoria);
+            
+            if (!prodottiCategoria.isEmpty()) {
+                JPanel categorySeparator = new JPanel();
+                categorySeparator.setBackground(accentColor);
+                categorySeparator.setPreferredSize(new Dimension(0, 2));
+                categorySeparator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
+                tablePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                tablePanel.add(categorySeparator);
+                
+                JLabel categoryLabel = new JLabel(categoria);
+                categoryLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+                categoryLabel.setForeground(accentColor);
+                categoryLabel.setBorder(BorderFactory.createEmptyBorder(8, 5, 5, 5));
+                tablePanel.add(categoryLabel);
+                
+                for (ProductInfo product : prodottiCategoria) {
+                    JPanel productRow = createProductRow(product.nome, 
+                                                         String.format("%.2f", product.prezzo), 
+                                                         String.valueOf(product.quantita));
                     tablePanel.add(productRow);
                 }
             }
         }
         
-        // ScrollPane per la tabella
         JScrollPane scrollPane = new JScrollPane(tablePanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -584,7 +528,6 @@ public class BarManagementSystem {
         
         inventarioPanel.add(scrollPane, BorderLayout.CENTER);
         
-        // Panel per i pulsanti di azione
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         actionPanel.setBackground(sfondo);
         
@@ -592,22 +535,20 @@ public class BarManagementSystem {
         JButton exportButton = new JButton("📋 Esporta");
         JButton closeButton = new JButton("❌ Chiudi");
         
-        // Stile pulsanti
         JButton[] buttons = {refreshButton, exportButton, closeButton};
         Color[] buttonColors = {
-            new Color(34, 139, 34),    // Verde per refresh
-            new Color(30, 144, 255),   // Blu per export
-            new Color(178, 34, 34)     // Rosso per chiudi
+            new Color(34, 139, 34),
+            new Color(30, 144, 255),
+            new Color(178, 34, 34)
         };
         
         for (int i = 0; i < buttons.length; i++) {
             styleActionButton(buttons[i], buttonColors[i]);
         }
         
-        // Event listeners
         refreshButton.addActionListener(e -> {
             inventarioFrame.dispose();
-            mostraInventarioCompleto(); // Ricarica la finestra
+            mostraInventarioCompleto();
         });
         
         exportButton.addActionListener(e -> {
@@ -621,7 +562,6 @@ public class BarManagementSystem {
         actionPanel.add(exportButton);
         actionPanel.add(closeButton);
         
-        // Assembla la finestra
         mainPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(statsPanel, BorderLayout.PAGE_START);
         mainPanel.add(inventarioPanel, BorderLayout.CENTER);
@@ -631,7 +571,6 @@ public class BarManagementSystem {
         inventarioFrame.setVisible(true);
     }
 
-    // Metodo helper per creare card delle statistiche
     private static JPanel createStatCard(String title, String value, Color accentColor) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
@@ -654,31 +593,25 @@ public class BarManagementSystem {
         return card;
     }
 
-    // Metodo helper per creare righe prodotto
     private static JPanel createProductRow(String nome, String prezzo, String quantita) {
         JPanel row = new JPanel(new GridLayout(1, 4));
         row.setBackground(Color.WHITE);
         row.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
         
-        // Alterna colore di sfondo
         if (Math.random() > 0.5) {
             row.setBackground(new Color(248, 248, 248));
         }
         
-        // Nome prodotto
         JLabel nomeLabel = new JLabel(nome);
         nomeLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         
-        // Prezzo
         JLabel prezzoLabel = new JLabel("€" + prezzo, SwingConstants.CENTER);
         prezzoLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         prezzoLabel.setForeground(new Color(30, 144, 255));
         
-        // Quantità
         JLabel quantitaLabel = new JLabel(quantita, SwingConstants.CENTER);
         quantitaLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         
-        // Stato basato sulla quantità
         JLabel statoLabel = new JLabel();
         statoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statoLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
@@ -706,7 +639,6 @@ public class BarManagementSystem {
         return row;
     }
 
-    // Metodo helper per stilizzare i pulsanti di azione
     private static void styleActionButton(JButton button, Color bgColor) {
         button.setBackground(bgColor);
         button.setForeground(Color.WHITE);
@@ -745,8 +677,19 @@ public class BarManagementSystem {
                     return;
                 }
                 
+                // Check if item already exists
+                String existingItem = DataManagementSystem.findItem(nome);
+                if (!existingItem.equals("Item not found or error occurred")) {
+                    JOptionPane.showMessageDialog(parent, 
+                        "Un prodotto con questo nome esiste già!\nUsa 'Rifornisci Prodotto' per aggiungere quantità.");
+                    return;
+                }
+                
                 DataManagementSystem.makeItem(nome, prezzo, quantita);
-                JOptionPane.showMessageDialog(parent, "Prodotto aggiunto con successo!");
+                JOptionPane.showMessageDialog(parent, 
+                    "Prodotto aggiunto con successo!\n\n" +
+                    "NOTA: I nuovi prodotti non fanno parte delle categorie predefinite.\n" +
+                    "Saranno visibili solo in 'Tutti i prodotti' nell'Area Clienti.");
                 
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(parent, "Inserisci valori numerici validi!");
@@ -793,179 +736,183 @@ public class BarManagementSystem {
             }
         }
     }
-    private static void caricaProdotti(DefaultListModel<String> model, String categoria) {
-    model.clear();
-    String[] prodotti;
     
-    System.out.println("Caricando categoria: " + categoria); // DEBUG
-    
-    if (categoria.equals("Tutti i prodotti")) {
-        prodotti = getTuttiIProdotti();
-    } else {
-        prodotti = getProdottiPerCategoria(categoria);
+    private static void eliminaDalMagazzino(JFrame parent) {
+        String prodotto = JOptionPane.showInputDialog(parent, "Nome del prodotto da eliminare:");
+        if (prodotto != null && !prodotto.trim().isEmpty()) {
+            int conferma = JOptionPane.showConfirmDialog(
+                parent,
+                "Sei sicuro di voler eliminare il prodotto \"" + prodotto.trim() + "\" dal magazzino?",
+                "Conferma eliminazione",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (conferma == JOptionPane.YES_OPTION) {
+                DataManagementSystem.deleteItem(prodotto.trim());
+                JOptionPane.showMessageDialog(parent, "Prodotto eliminato con successo!");
+            }
+        }
     }
-    
-    System.out.println("Prodotti da cercare: " + Arrays.toString(prodotti)); // DEBUG
-    
-    for (String prodotto : prodotti) {
-    	System.out.println("Cercando prodotto: " + prodotto); // DEBUG
-        String itemInfo = DataManagementSystem.findItem(prodotto);
-        System.out.println("Risultato ricerca: " + itemInfo); // DEBUG
+
+    private static void caricaProdotti(DefaultListModel<String> model, String categoria) {
+        model.clear();
+        String[] prodotti;
+        
+        if (categoria.equals("Tutti i prodotti")) {
+            prodotti = getTuttiIProdotti();
+        } else {
+            prodotti = getProdottiPerCategoria(categoria);
+        }
+        
+        for (String prodotto : prodotti) {
+            String itemInfo = DataManagementSystem.findItem(prodotto);
+            if (!itemInfo.equals("Item not found or error occurred")) {
+                String[] lines = itemInfo.split("\n");
+                String prezzo = "";
+                String quantita = "";
+                
+                for (String line : lines) {
+                    if (line.trim().startsWith("Price=")) {
+                        prezzo = line.trim().substring(6, line.trim().length() - 1);
+                    } else if (line.trim().startsWith("Quantity=")) {
+                        quantita = line.trim().substring(9, line.trim().length() - 1);
+                    }
+                }
+                
+                if (Integer.parseInt(quantita) > 0) {
+                    String displayText = prodotto + " - €" + prezzo + " (Disp: " + quantita + ")";
+                    model.addElement(displayText);
+                }
+            }
+        }
+    }
+
+    private static String[] getTuttiIProdotti() {
+        String[] colazione = getProdottiPerCategoria("🍩 Colazione");
+        String[] bevande = getProdottiPerCategoria("🥤 Bevande");
+        String[] salati = getProdottiPerCategoria("🥪 Salati");
+        String[] snack = getProdottiPerCategoria("🍌 Snack");
+        
+        ArrayList<String> tutti = new ArrayList<>();
+        tutti.addAll(Arrays.asList(colazione));
+        tutti.addAll(Arrays.asList(bevande));
+        tutti.addAll(Arrays.asList(salati));
+        tutti.addAll(Arrays.asList(snack));
+        
+        return tutti.toArray(new String[0]);
+    }
+
+    private static String estraiNomeProdotto(String displayText) {
+        return displayText.split(" - €")[0];
+    }
+
+    private static String estraiNomeProdottoCarrello(String displayText) {
+        return displayText.split(" x")[1].split(" - €")[0].trim();
+    }
+
+    private static void aggiungiAlCarrello(String nomeProdotto, int quantita) {
+        String itemInfo = DataManagementSystem.findItem(nomeProdotto);
         if (!itemInfo.equals("Item not found or error occurred")) {
             String[] lines = itemInfo.split("\n");
-            String prezzo = "";
-            String quantita = "";
+            double prezzo = 0;
+            int disponibili = 0;
             
             for (String line : lines) {
                 if (line.trim().startsWith("Price=")) {
-                    prezzo = line.trim().substring(6, line.trim().length() - 1);
+                    prezzo = Double.parseDouble(line.trim().substring(6, line.trim().length() - 1));
                 } else if (line.trim().startsWith("Quantity=")) {
-                    quantita = line.trim().substring(9, line.trim().length() - 1);
+                    disponibili = Integer.parseInt(line.trim().substring(9, line.trim().length() - 1));
                 }
             }
             
-            if (Integer.parseInt(quantita) > 0) { // Mostra solo prodotti disponibili
-            	String displayText = prodotto + " - €" + prezzo + " (Disp: " + quantita + ")";
-                System.out.println("Aggiungendo alla lista: " + displayText); // DEBUG
-                model.addElement(displayText);
-            }
-        }
-    }System.out.println("Totale prodotti caricati: " + model.getSize()); // DEBUG
-}
-
-private static String[] getTuttiIProdotti() {
-    String[] colazione = getProdottiPerCategoria("🍩 Colazione");
-    String[] bevande = getProdottiPerCategoria("🥤 Bevande");
-    String[] salati = getProdottiPerCategoria("🥪 Salati");
-    String[] snack = getProdottiPerCategoria("🍌 Snack");
-    
-    ArrayList<String> tutti = new ArrayList<>();
-    tutti.addAll(Arrays.asList(colazione));
-    tutti.addAll(Arrays.asList(bevande));
-    tutti.addAll(Arrays.asList(salati));
-    tutti.addAll(Arrays.asList(snack));
-    
-    return tutti.toArray(new String[0]);
-}
-
-private static String estraiNomeProdotto(String displayText) {
-    return displayText.split(" - €")[0];
-}
-
-private static String estraiNomeProdottoCarrello(String displayText) {
-    return displayText.split(" x")[1].split(" - €")[0].trim();
-}
-
-private static void aggiungiAlCarrello(String nomeProdotto, int quantita) {
-    String itemInfo = DataManagementSystem.findItem(nomeProdotto);
-    if (!itemInfo.equals("Item not found or error occurred")) {
-        String[] lines = itemInfo.split("\n");
-        double prezzo = 0;
-        int disponibili = 0;
-        
-        for (String line : lines) {
-            if (line.trim().startsWith("Price=")) {
-                prezzo = Double.parseDouble(line.trim().substring(6, line.trim().length() - 1));
-            } else if (line.trim().startsWith("Quantity=")) {
-                disponibili = Integer.parseInt(line.trim().substring(9, line.trim().length() - 1));
-            }
-        }
-        
-        if (disponibili >= quantita) {
-            if (carrello.containsKey(nomeProdotto)) {
-                CartItem existing = carrello.get(nomeProdotto);
-                if (disponibili >= existing.quantita + quantita) {
-                    existing.quantita += quantita;
+            if (disponibili >= quantita) {
+                if (carrello.containsKey(nomeProdotto)) {
+                    CartItem existing = carrello.get(nomeProdotto);
+                    if (disponibili >= existing.quantita + quantita) {
+                        existing.quantita += quantita;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Quantità non disponibile!");
+                        return;
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Quantità non disponibile!");
-                    return;
+                    carrello.put(nomeProdotto, new CartItem(nomeProdotto, prezzo, quantita));
                 }
             } else {
-                carrello.put(nomeProdotto, new CartItem(nomeProdotto, prezzo, quantita));
+                JOptionPane.showMessageDialog(null, "Quantità non disponibile!");
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "Quantità non disponibile!");
         }
     }
-}
 
-private static void aggiornaCarrello(DefaultListModel<String> model, JLabel totalLabel) {
-    model.clear();
-    double totale = 0;
-    
-    for (CartItem item : carrello.values()) {
-        model.addElement(item.quantita + " x " + item.nome + " - €" + 
-                        String.format("%.2f", item.prezzo) + " = €" + 
-                        String.format("%.2f", item.getTotale()));
-        totale += item.getTotale();
+    private static void aggiornaCarrello(DefaultListModel<String> model, JLabel totalLabel) {
+        model.clear();
+        double totale = 0;
+        
+        for (CartItem item : carrello.values()) {
+            model.addElement(item.quantita + " x " + item.nome + " - €" + 
+                            String.format("%.2f", item.prezzo) + " = €" + 
+                            String.format("%.2f", item.getTotale()));
+            totale += item.getTotale();
+        }
+        
+        totalLabel.setText("Totale: €" + String.format("%.2f", totale));
     }
-    
-    totalLabel.setText("Totale: €" + String.format("%.2f", totale));
-}
 
-private static void inviaOrdine(JFrame parent) {
-    // Verifica disponibilità prima di confermare
-    Map<String, Integer> ordineMap = new HashMap<>();
-    for (CartItem item : carrello.values()) {
-        ordineMap.put(item.nome, item.quantita);
-    }
-    
-    // Controlla disponibilità
-    boolean disponibile = true;
-    StringBuilder messaggioErrore = new StringBuilder();
-    
-    for (Map.Entry<String, Integer> entry : ordineMap.entrySet()) {
-        String itemInfo = DataManagementSystem.findItem(entry.getKey());
-        if (!itemInfo.equals("Item not found or error occurred")) {
-            String[] lines = itemInfo.split("\n");
-            for (String line : lines) {
-                if (line.trim().startsWith("Quantity=")) {
-                    int disponibili = Integer.parseInt(line.trim().substring(9, line.trim().length() - 1));
-                    if (disponibili < entry.getValue()) {
-                        disponibile = false;
-                        messaggioErrore.append("- ").append(entry.getKey())
-                                     .append(": richiesti ").append(entry.getValue())
-                                     .append(", disponibili ").append(disponibili).append("\n");
+    private static void inviaOrdine(JFrame parent) {
+        Map<String, Integer> ordineMap = new HashMap<>();
+        for (CartItem item : carrello.values()) {
+            ordineMap.put(item.nome, item.quantita);
+        }
+        
+        boolean disponibile = true;
+        StringBuilder messaggioErrore = new StringBuilder();
+        
+        for (Map.Entry<String, Integer> entry : ordineMap.entrySet()) {
+            String itemInfo = DataManagementSystem.findItem(entry.getKey());
+            if (!itemInfo.equals("Item not found or error occurred")) {
+                String[] lines = itemInfo.split("\n");
+                for (String line : lines) {
+                    if (line.trim().startsWith("Quantity=")) {
+                        int disponibili = Integer.parseInt(line.trim().substring(9, line.trim().length() - 1));
+                        if (disponibili < entry.getValue()) {
+                            disponibile = false;
+                            messaggioErrore.append("- ").append(entry.getKey())
+                                         .append(": richiesti ").append(entry.getValue())
+                                         .append(", disponibili ").append(disponibili).append("\n");
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
-    }
-    
-    if (!disponibile) {
-        JOptionPane.showMessageDialog(parent, 
-            "Alcuni prodotti non sono più disponibili nella quantità richiesta:\n\n" + 
-            messaggioErrore.toString());
-        return;
-    }
-    
-    // Calcola totale
-    double totale = carrello.values().stream().mapToDouble(CartItem::getTotale).sum();
-    
-    // Conferma ordine
-    StringBuilder riepilogo = new StringBuilder("Riepilogo Ordine:\n\n");
-    for (CartItem item : carrello.values()) {
-        riepilogo.append(item.quantita).append(" x ").append(item.nome)
-                .append(" = €").append(String.format("%.2f", item.getTotale())).append("\n");
-    }
-    riepilogo.append("\nTotale: €").append(String.format("%.2f", totale));
-    riepilogo.append("\n\nConfermare l'ordine?");
-    
-    int result = JOptionPane.showConfirmDialog(parent, riepilogo.toString(), 
-                                              "Conferma Ordine", JOptionPane.YES_NO_OPTION);
-    
-    if (result == JOptionPane.YES_OPTION) {
-        // Rimuovi prodotti dall'inventario
-        DataManagementSystem.removeMultipleItems(ordineMap);
         
-        JOptionPane.showMessageDialog(parent, 
-            "Ordine inviato con successo!\nTotale: €" + String.format("%.2f", totale) + 
-            "\n\nGrazie per il tuo acquisto!");
+        if (!disponibile) {
+            JOptionPane.showMessageDialog(parent, 
+                "Alcuni prodotti non sono più disponibili nella quantità richiesta:\n\n" + 
+                messaggioErrore.toString());
+            return;
+        }
         
-        // Svuota carrello
-        carrello.clear();
+        double totale = carrello.values().stream().mapToDouble(CartItem::getTotale).sum();
+        
+        StringBuilder riepilogo = new StringBuilder("Riepilogo Ordine:\n\n");
+        for (CartItem item : carrello.values()) {
+            riepilogo.append(item.quantita).append(" x ").append(item.nome)
+                    .append(" = €").append(String.format("%.2f", item.getTotale())).append("\n");
+        }
+        riepilogo.append("\nTotale: €").append(String.format("%.2f", totale));
+        riepilogo.append("\n\nConfermare l'ordine?");
+        
+        int result = JOptionPane.showConfirmDialog(parent, riepilogo.toString(), 
+                                                  "Conferma Ordine", JOptionPane.YES_NO_OPTION);
+        
+        if (result == JOptionPane.YES_OPTION) {
+            DataManagementSystem.removeMultipleItems(ordineMap);
+            
+            JOptionPane.showMessageDialog(parent, 
+                "Ordine inviato con successo!\nTotale: €" + String.format("%.2f", totale) + 
+                "\n\nGrazie per il tuo acquisto!");
+            
+            carrello.clear();
+        }
     }
 }
-}
-

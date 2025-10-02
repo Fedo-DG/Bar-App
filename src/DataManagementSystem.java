@@ -273,6 +273,72 @@ public class DataManagementSystem
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Deletes an item completely from the data file.
+     * If the item is not found, a message is printed.
+     */
+    public static void deleteItem(String itemName)
+    {
+        try
+        {
+            List<String> lines = readAllLines();
+            boolean found = false;
+
+            for (int i = 0; i < lines.size(); i++)
+            {
+                if (lines.get(i).trim().equals("{"))
+                {
+                    int start = i;
+                    int end = -1;
+                    boolean matches = false;
+
+                    // Search inside the block
+                    for (int j = i + 1; j < lines.size(); j++)
+                    {
+                        String currentLine = lines.get(j).trim();
+
+                        if (currentLine.startsWith("Item="))
+                        {
+                            String itemValue = extractValue(currentLine, "Item=");
+                            if (itemValue.equalsIgnoreCase(itemName))
+                            {
+                                matches = true;
+                            }
+                        }
+
+                        if (currentLine.equals("}"))
+                        {
+                            end = j;
+                            break;
+                        }
+                    }
+
+                    // If this block matches the item, delete it
+                    if (matches && end != -1)
+                    {
+                        for (int k = end; k >= start; k--)
+                        {
+                            lines.remove(k);
+                        }
+                        found = true;
+                        break; // only remove the first match
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                return;
+            }
+
+            writeAllLines(lines);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     private static List<String> readAllLines() throws IOException
     {
